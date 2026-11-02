@@ -1,0 +1,6 @@
+# lines to change in /etc/login.defs (they apply to users created afterwards;
+# existing users: sudo chage -M 30 -m 2 -W 7 <user>)
+
+PASS_MAX_DAYS   30
+PASS_MIN_DAYS   2
+PASS_WARN_AGE   7
