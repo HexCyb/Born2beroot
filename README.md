@@ -1,5 +1,7 @@
 # Born2beroot
 
+[![CI](https://github.com/HexCyb/Born2beroot/actions/workflows/ci.yml/badge.svg)](https://github.com/HexCyb/Born2beroot/actions/workflows/ci.yml)
+
 A secure Debian server set up by hand in a virtual machine: encrypted LVM partitions, strict sudo and password rules, a firewall, SSH on a custom port and a monitoring script that cron runs every 10 minutes.
 
 > Originally completed at **42 Türkiye** as part of the common core. This repository is a 2026 rewrite, because the original code was lost.
@@ -94,3 +96,12 @@ AppArmor is active on Debian by default. Check it with `aa-status`.
 | SSH | `sudo systemctl status ssh`, `grep -E '^(Port\|PermitRootLogin)' /etc/ssh/sshd_config` |
 | AppArmor | `sudo aa-status` |
 | Stop the script without editing it | `sudo systemctl stop cron` (or remove the crontab line) |
+
+## Continuous integration
+
+Every push runs [GitHub Actions](https://github.com/HexCyb/Born2beroot/actions/workflows/ci.yml) (`.github/workflows/ci.yml`):
+
+- ShellCheck on `monitoring.sh`
+- `visudo -c` parses the sudo rules
+- the password policy values (30 / 2 / 7 days, `minlen = 10`, `difok = 7`, `enforce_for_root`)
+- `monitoring.sh --stdout` runs on a real Linux machine and must print all 12 lines
