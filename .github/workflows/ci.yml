@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: ShellCheck
+        run: shellcheck monitoring.sh
+      - name: sudo rules parse (visudo)
+        run: sudo visudo -cf config/sudo_config
+      - name: Password policy values
+        run: |
+          grep -Eq '^PASS_MAX_DAYS[[:space:]]+30$' config/login.defs
+          grep -Eq '^PASS_MIN_DAYS[[:space:]]+2$'  config/login.defs
+          grep -Eq '^PASS_WARN_AGE[[:space:]]+7$'  config/login.defs
+          grep -Eq '^minlen = 10$'   config/pwquality.conf
+          grep -Eq '^difok = 7$'     config/pwquality.conf
+          grep -Eq '^enforce_for_root$' config/pwquality.conf
+      - name: monitoring.sh prints all 12 lines
+        run: |
+          out=$(bash monitoring.sh --stdout)
+          printf '%s\n' "$out"
+          for key in "Architecture" "CPU physical" "vCPU" "Memory Usage" "Disk Usage" "CPU load" \
+                     "Last boot" "LVM use" "Connections TCP" "User log" "Network" "Sudo"; do
+            printf '%s\n' "$out" | grep -q "#$key" || { echo "missing line: $key"; exit 1; }
+          done
