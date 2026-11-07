@@ -6,7 +6,9 @@ on:
 
 jobs:
   checks:
-    runs-on: ubuntu-latest
+    # Ubuntu 24.04 has the classic sudo, like Debian. Newer Ubuntu ships sudo-rs, whose visudo
+    # does not know Defaults such as badpass_message, log_input, iolog_dir or requiretty.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
       - name: ShellCheck
